@@ -25,7 +25,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building Docker images...'
-                sh 'docker compose build'
+                sh 'docker-compose build'
                 echo 'All images built successfully'
             }
         }
@@ -35,16 +35,16 @@ pipeline {
             steps {
                 sh '''
                     echo "Stopping old containers..."
-                    docker compose down
+                    docker-compose down
 
                     echo "Starting updated containers..."
-                    docker compose up -d
+                    docker-compose up -d
 
                     echo "Waiting for health checks..."
                     sleep 20
 
                     echo "Container status:"
-                    docker compose ps
+                    docker-compose ps
 
                     echo "Cleaning up old unused images..."
                     docker image prune -f

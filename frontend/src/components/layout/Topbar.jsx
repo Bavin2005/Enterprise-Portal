@@ -179,7 +179,7 @@ function Topbar({ sidebarCollapsed, onToggleSidebar, onToggleMobile, sidebarMobi
                 />
                 <div className="absolute right-0 top-full z-50 mt-2 w-48 animate-fade-in rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
                   <button type="button" className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700">
-                    Profile
+                    Profileeee
                   </button>
                   <button type="button" className="block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700">
                     Settings

@@ -34,6 +34,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
+                    echo "Removing any conflicting containers..."
+                    docker rm -f portal_mongodb portal_backend1 portal_backend2 portal_frontend 2>/dev/null || true
+
                     echo "Stopping old containers..."
                     docker-compose down
 

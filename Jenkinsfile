@@ -14,7 +14,9 @@ pipeline {
         stage('Setup Environment') {
             steps {
                 withCredentials([file(credentialsId: 'portal-env-file', variable: 'ENV_FILE')]) {
-                    sh 'cp $ENV_FILE .env'
+                    sh """
+                        cp "\${ENV_FILE}" .env
+                    """
                 }
                 echo 'Environment file ready'
             }

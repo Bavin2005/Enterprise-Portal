@@ -1,0 +1,97 @@
+version: "3.9"
+
+networks:
+  portal_network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+    driver: local
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: portal_mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: mini_enterprise_portal
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - portal_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  backend1:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: portal_backend1
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/mini_enterprise_portal?authSource=admin
+      PORT: 5000
+      INSTANCE_ID: backend1
+    ports:
+      - "8081:5000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - portal_network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  backend2:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: portal_backend2
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MONGO_URI: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/mini_enterprise_portal?authSource=admin
+      PORT: 5000
+      INSTANCE_ID: backend2
+    ports:
+      - "8082:5000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - portal_network
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: portal_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      backend1:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+    networks:
+      - portal_network

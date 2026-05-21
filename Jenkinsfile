@@ -43,6 +43,9 @@ pipeline {
                     echo "Starting updated containers..."
                     docker-compose up -d
 
+                    echo "Reconnecting Jenkins to portal network..."
+                    docker network connect minienterpriseportal_portal_network jenkins 2>/dev/null || true
+
                     echo "Waiting for health checks..."
                     sleep 20
 
